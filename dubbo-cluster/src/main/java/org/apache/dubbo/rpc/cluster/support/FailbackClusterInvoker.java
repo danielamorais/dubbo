@@ -35,8 +35,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.dubbo.rpc.cluster.Constants.DEFAULT_FAILBACK_TIMES;
-import static org.apache.dubbo.rpc.cluster.Constants.RETRIES_KEY;
+import static org.apache.dubbo.common.constants.CommonConstants.DEFAULT_FAILBACK_TIMES;
+import static org.apache.dubbo.common.constants.CommonConstants.RETRIES_KEY;
 import static org.apache.dubbo.rpc.cluster.Constants.DEFAULT_FAILBACK_TASKS;
 import static org.apache.dubbo.rpc.cluster.Constants.FAIL_BACK_TASKS_KEY;
 
@@ -102,7 +102,9 @@ public class FailbackClusterInvoker<T> extends AbstractClusterInvoker<T> {
         } catch (Throwable e) {
             logger.error("Failback to invoke method " + invocation.getMethodName() + ", wait for retry in background. Ignored exception: "
                     + e.getMessage() + ", ", e);
-            addFailed(loadbalance, invocation, invokers, invoker);
+            if (retries > 0) {
+                addFailed(loadbalance, invocation, invokers, invoker);
+            }
             return AsyncRpcResult.newDefaultAsyncResult(null, null, invocation); // ignore
         }
     }
